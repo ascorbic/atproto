@@ -1,8 +1,6 @@
-/* eslint-disable import/no-deprecated */
-
 import { CID } from 'multiformats'
 import * as uint8arrays from 'uint8arrays'
-import { cidForCbor } from '@atproto/common'
+import { cidForLex } from '@atproto/lex-cbor'
 import { sha256 } from '@atproto/crypto'
 import { ReadableBlockstore } from '../storage'
 import { Leaf, MST, MstOpts, NodeData, NodeEntry } from './mst'
@@ -113,7 +111,7 @@ export const countPrefixLen = (a: string, b: string): number => {
 
 export const cidForEntries = async (entries: NodeEntry[]): Promise<CID> => {
   const data = serializeNodeData(entries)
-  return cidForCbor(data)
+  return (await cidForLex(data)) as unknown as CID
 }
 
 export const isValidMstKey = (str: string): boolean => {

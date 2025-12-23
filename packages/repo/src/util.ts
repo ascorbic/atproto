@@ -1,7 +1,7 @@
-/* eslint-disable import/no-deprecated */
-
 import * as cbor from '@ipld/dag-cbor'
-import { TID, cborDecode, check, cidForCbor, schema } from '@atproto/common'
+import { CID } from 'multiformats/cid'
+import { TID, check, schema } from '@atproto/common-web'
+import { decode as cborDecode, cidForLex } from '@atproto/lex-cbor'
 import * as crypto from '@atproto/crypto'
 import { Keypair } from '@atproto/crypto'
 import { LexValue, RepoRecord, ipldToLex, lexToIpld } from '@atproto/lexicon'
@@ -114,8 +114,8 @@ export const cborToLexRecord = (val: Uint8Array): RepoRecord => {
   return parsed
 }
 
-export const cidForRecord = async (val: LexValue) => {
-  return cidForCbor(lexToIpld(val))
+export const cidForRecord = async (val: LexValue): Promise<CID> => {
+  return (await cidForLex(lexToIpld(val))) as unknown as CID
 }
 
 export const ensureV3Commit = (commit: LegacyV2Commit | Commit): Commit => {

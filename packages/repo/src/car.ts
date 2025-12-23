@@ -1,17 +1,22 @@
-/* eslint-disable import/no-deprecated */
-
-import { setImmediate } from 'node:timers/promises'
 import * as cbor from '@ipld/dag-cbor'
 import { CID } from 'multiformats/cid'
 import * as ui8 from 'uint8arrays'
 import * as varint from 'varint'
-import {
-  check,
-  parseCidFromBytes,
-  schema,
-  streamToBuffer,
-  verifyCidForBytes,
-} from '@atproto/common'
+import { check, schema } from '@atproto/common-web'
+import { parseCidFromBytes, verifyCidForBytes } from '@atproto/lex-cbor'
+
+const yieldToEventLoop = (): Promise<void> =>
+  new Promise((resolve) => setTimeout(resolve, 0))
+
+async function streamToBuffer(
+  stream: AsyncIterable<Uint8Array>,
+): Promise<Uint8Array> {
+  const chunks: Uint8Array[] = []
+  for await (const chunk of stream) {
+    chunks.push(chunk)
+  }
+  return ui8.concat(chunks)
+}
 import { BlockMap } from './block-map'
 import { CarBlock } from './types'
 
@@ -165,7 +170,7 @@ async function* readCarBlocksIterGenerator(
         break
       }
       const blockBytes = await reader.read(blockSize)
-      const cid = parseCidFromBytes(blockBytes.subarray(0, 36))
+      const cid = parseCidFromBytes(blockBytes.subarray(0, 36)) as unknown as CID
       const bytes = blockBytes.subarray(36)
       yield { cid, bytes }
 
@@ -173,7 +178,7 @@ async function* readCarBlocksIterGenerator(
       // in the case the incoming CAR is synchronous, this can end up jamming up the thread
       blocks++
       if (blocks % 25 === 0) {
-        await setImmediate()
+        await yieldToEventLoop()
       }
     }
   } finally {

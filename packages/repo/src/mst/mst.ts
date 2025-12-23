@@ -1,8 +1,13 @@
-/* eslint-disable import/no-deprecated */
-
 import { CID } from 'multiformats'
 import { z } from 'zod'
-import { cidForCbor, dataToCborBlock, schema as common } from '@atproto/common'
+import { schema as common } from '@atproto/common-web'
+import { cidForLex, encode, cidForCbor } from '@atproto/lex-cbor'
+
+async function dataToCborBlock<T>(value: T): Promise<{ cid: CID; bytes: Uint8Array }> {
+  const bytes = encode(value) as Uint8Array
+  const cid = (await cidForCbor(bytes)) as unknown as CID
+  return { cid, bytes }
+}
 import { BlockMap } from '../block-map'
 import { CidSet } from '../cid-set'
 import { MissingBlockError, MissingBlocksError } from '../error'
@@ -104,7 +109,7 @@ export class MST {
   ): Promise<MST> {
     const { layer = null } = opts || {}
     const entries = await util.deserializeNodeData(storage, data, opts)
-    const pointer = await cidForCbor(data)
+    const pointer = (await cidForLex(data)) as unknown as CID
     return new MST(storage, pointer, entries, layer)
   }
 

@@ -1,11 +1,11 @@
-/* eslint-disable import/no-deprecated */
-
-import stream from 'node:stream'
 import { CID } from 'multiformats/cid'
-import { check } from '@atproto/common'
+import { check } from '@atproto/common-web'
 import { RepoRecord } from '@atproto/lexicon'
 import { BlockMap } from '../block-map'
 import { CommitData } from '../types'
+
+// Edge-compatible stream type - can be Node.js Readable or Web ReadableStream wrapped as AsyncIterable
+export type BlobStream = AsyncIterable<Uint8Array>
 
 export interface RepoStorage {
   // Writable
@@ -33,13 +33,13 @@ export interface RepoStorage {
 }
 
 export interface BlobStore {
-  putTemp(bytes: Uint8Array | stream.Readable): Promise<string>
+  putTemp(bytes: Uint8Array | BlobStream): Promise<string>
   makePermanent(key: string, cid: CID): Promise<void>
-  putPermanent(cid: CID, bytes: Uint8Array | stream.Readable): Promise<void>
+  putPermanent(cid: CID, bytes: Uint8Array | BlobStream): Promise<void>
   quarantine(cid: CID): Promise<void>
   unquarantine(cid: CID): Promise<void>
   getBytes(cid: CID): Promise<Uint8Array>
-  getStream(cid: CID): Promise<stream.Readable>
+  getStream(cid: CID): Promise<BlobStream>
   hasTemp(key: string): Promise<boolean>
   hasStored(cid: CID): Promise<boolean>
   delete(cid: CID): Promise<void>

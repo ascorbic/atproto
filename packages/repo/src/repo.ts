@@ -1,9 +1,14 @@
-/* eslint-disable import/no-deprecated */
-
 import { CID } from 'multiformats/cid'
-import { TID, dataToCborBlock } from '@atproto/common'
+import { TID } from '@atproto/common-web'
+import { encode, cidForCbor } from '@atproto/lex-cbor'
 import * as crypto from '@atproto/crypto'
 import { lexToIpld } from '@atproto/lexicon'
+
+async function dataToCborBlock<T>(value: T): Promise<{ cid: CID; bytes: Uint8Array }> {
+  const bytes = encode(value) as Uint8Array
+  const cid = (await cidForCbor(bytes)) as unknown as CID
+  return { cid, bytes }
+}
 import { BlockMap } from './block-map'
 import { CidSet } from './cid-set'
 import { DataDiff } from './data-diff'

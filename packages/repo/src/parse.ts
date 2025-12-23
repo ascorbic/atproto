@@ -1,7 +1,6 @@
-/* eslint-disable import/no-deprecated */
-
 import { CID } from 'multiformats/cid'
-import { cborDecode, check } from '@atproto/common'
+import { check } from '@atproto/common-web'
+import { decode as cborDecode } from '@atproto/lex-cbor'
 import { RepoRecord } from '@atproto/lexicon'
 import { BlockMap } from './block-map'
 import { MissingBlockError, UnexpectedObjectError } from './error'
