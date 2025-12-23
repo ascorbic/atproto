@@ -1,14 +1,11 @@
+// Using `import type` ensures this is completely erased at compile time,
+// so there's no runtime dependency on node:stream for web platform usage.
+import type { Readable } from 'node:stream'
 import { CID } from 'multiformats/cid'
 import { check } from '@atproto/common-web'
 import { RepoRecord } from '@atproto/lexicon'
 import { BlockMap } from '../block-map'
 import { CommitData } from '../types'
-
-// Web platform compatible stream type.
-// Node.js Readable streams implement AsyncIterable, so they work directly.
-// Web ReadableStreams can be converted using stream[Symbol.asyncIterator]() or
-// by using a library like 'stream-consumers'.
-export type BlobStream = AsyncIterable<Uint8Array>
 
 export interface RepoStorage {
   // Writable
@@ -36,13 +33,13 @@ export interface RepoStorage {
 }
 
 export interface BlobStore {
-  putTemp(bytes: Uint8Array | BlobStream): Promise<string>
+  putTemp(bytes: Uint8Array | Readable): Promise<string>
   makePermanent(key: string, cid: CID): Promise<void>
-  putPermanent(cid: CID, bytes: Uint8Array | BlobStream): Promise<void>
+  putPermanent(cid: CID, bytes: Uint8Array | Readable): Promise<void>
   quarantine(cid: CID): Promise<void>
   unquarantine(cid: CID): Promise<void>
   getBytes(cid: CID): Promise<Uint8Array>
-  getStream(cid: CID): Promise<BlobStream>
+  getStream(cid: CID): Promise<Readable>
   hasTemp(key: string): Promise<boolean>
   hasStored(cid: CID): Promise<boolean>
   delete(cid: CID): Promise<void>
