@@ -4,7 +4,10 @@ import { RepoRecord } from '@atproto/lexicon'
 import { BlockMap } from '../block-map'
 import { CommitData } from '../types'
 
-// Edge-compatible stream type - can be Node.js Readable or Web ReadableStream wrapped as AsyncIterable
+// Web platform compatible stream type.
+// Node.js Readable streams implement AsyncIterable, so they work directly.
+// Web ReadableStreams can be converted using stream[Symbol.asyncIterator]() or
+// by using a library like 'stream-consumers'.
 export type BlobStream = AsyncIterable<Uint8Array>
 
 export interface RepoStorage {
