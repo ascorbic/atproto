@@ -1,24 +1,8 @@
 // Logger with optional pino support for backwards compatibility.
 // If @atproto/common is available (Node.js), uses pino logger.
-// Otherwise falls back to no-op for web platform compatibility.
+// Otherwise uses console logger from @atproto/common-web.
 
-type LogFn = (obj: Record<string, unknown>, msg?: string) => void
-
-interface Logger {
-  debug: LogFn
-  info: LogFn
-  warn: LogFn
-  error: LogFn
-}
-
-const noop: LogFn = () => {}
-
-const noopLogger: Logger = {
-  debug: noop,
-  info: noop,
-  warn: noop,
-  error: noop,
-}
+import { subsystemLogger as webLogger, Logger } from '@atproto/common-web'
 
 function createLogger(): Logger {
   try {
@@ -27,8 +11,8 @@ function createLogger(): Logger {
     const { subsystemLogger } = require('@atproto/common')
     return subsystemLogger('repo')
   } catch {
-    // Fall back to no-op if @atproto/common is not installed
-    return noopLogger
+    // Fall back to console logger from common-web
+    return webLogger('repo')
   }
 }
 
