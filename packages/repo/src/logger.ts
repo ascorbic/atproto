@@ -1,5 +1,7 @@
-// Simple console-based logger for web platform compatibility.
-// Uses the same call signature as pino for internal compatibility.
+// No-op logger for web platform compatibility.
+// Logging was previously handled by pino via @atproto/common.
+// To avoid behavioral changes, logging is now disabled by default.
+// Consumers can observe repo operations through their own instrumentation.
 
 type LogFn = (obj: Record<string, unknown>, msg?: string) => void
 
@@ -10,26 +12,13 @@ interface Logger {
   error: LogFn
 }
 
-const createLogFn =
-  (level: string): LogFn =>
-  (obj, msg) => {
-    if (typeof console !== 'undefined' && console[level as keyof Console]) {
-      const logFn = console[level as keyof Console] as (
-        ...args: unknown[]
-      ) => void
-      if (msg) {
-        logFn(`[repo] ${msg}`, obj)
-      } else {
-        logFn('[repo]', obj)
-      }
-    }
-  }
+const noop: LogFn = () => {}
 
 export const logger: Logger = {
-  debug: createLogFn('debug'),
-  info: createLogFn('info'),
-  warn: createLogFn('warn'),
-  error: createLogFn('error'),
+  debug: noop,
+  info: noop,
+  warn: noop,
+  error: noop,
 }
 
 export default logger
