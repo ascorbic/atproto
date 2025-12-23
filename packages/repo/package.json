@@ -37,5 +37,13 @@
   "devDependencies": {
     "jest": "^28.1.2",
     "typescript": "^5.6.3"
+  },
+  "peerDependencies": {
+    "@atproto/common": "workspace:^"
+  },
+  "peerDependenciesMeta": {
+    "@atproto/common": {
+      "optional": true
+    }
   }
 }
