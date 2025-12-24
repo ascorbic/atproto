@@ -1,4 +1,4 @@
-import { streamToBuffer } from '@atproto/common'
+import { streamToBuffer } from '@atproto/common-web'
 import * as crypto from '@atproto/crypto'
 import {
   CidSet,

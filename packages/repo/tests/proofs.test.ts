@@ -1,8 +1,6 @@
-/* eslint-disable import/no-deprecated */
-
-import { TID, cidForCbor, streamToBuffer } from '@atproto/common'
+import { TID, streamToBuffer } from '@atproto/common-web'
 import * as crypto from '@atproto/crypto'
-import { RecordCidClaim, RecordPath, Repo, RepoContents } from '../src'
+import { cidForRecord, RecordCidClaim, RecordPath, Repo, RepoContents } from '../src'
 import { MemoryBlockstore } from '../src/storage'
 import * as sync from '../src/sync'
 import * as util from './_util'
@@ -41,7 +39,7 @@ describe('Repo Proofs', () => {
         claims.push({
           collection: coll,
           rkey: rkey,
-          cid: await cidForCbor(contents[coll][rkey]),
+          cid: await cidForRecord(contents[coll][rkey]),
         })
       }
     }
@@ -138,7 +136,7 @@ describe('Repo Proofs', () => {
         throw new Error('Could not find record for claim')
       }
       expect(foundClaim.cid).toEqual(
-        await cidForCbor(repoData[record.collection][record.rkey]),
+        await cidForRecord(repoData[record.collection][record.rkey]),
       )
     }
   })

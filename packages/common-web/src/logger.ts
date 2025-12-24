@@ -10,16 +10,6 @@ export interface Logger {
   error: LogFn
 }
 
-const createConsoleFn =
-  (level: 'debug' | 'info' | 'warn' | 'error'): LogFn =>
-  (obj, msg) => {
-    if (msg) {
-      console[level](msg, obj)
-    } else {
-      console[level](obj)
-    }
-  }
-
 const createSubsystemConsoleFn =
   (name: string, level: 'debug' | 'info' | 'warn' | 'error'): LogFn =>
   (obj, msg) => {

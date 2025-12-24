@@ -1,13 +1,7 @@
 import { CID } from 'multiformats/cid'
 import * as uint8arrays from 'uint8arrays'
-import { encode, cidForCbor } from '@atproto/lex-cbor'
 import { LexValue, lexToIpld } from '@atproto/lexicon'
-
-async function dataToCborBlock<T>(value: T): Promise<{ cid: CID; bytes: Uint8Array }> {
-  const bytes = encode(value) as Uint8Array
-  const cid = (await cidForCbor(bytes)) as unknown as CID
-  return { cid, bytes }
-}
+import { dataToCborBlock } from './util'
 
 export class BlockMap implements Iterable<[cid: CID, bytes: Uint8Array]> {
   private map: Map<string, Uint8Array> = new Map()

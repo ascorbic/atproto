@@ -1,8 +1,6 @@
-/* eslint-disable import/no-deprecated */
-
 import fs from 'node:fs'
 import { CID } from 'multiformats'
-import { TID, dataToCborBlock } from '@atproto/common'
+import { TID } from '@atproto/common-web'
 import * as crypto from '@atproto/crypto'
 import { Keypair, randomBytes } from '@atproto/crypto'
 import {
@@ -11,6 +9,7 @@ import {
   Commit,
   CommitData,
   DataDiff,
+  dataToCborBlock,
   RecordPath,
   RecordWriteOp,
   RepoContents,

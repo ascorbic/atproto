@@ -5,6 +5,7 @@ export * from './env'
 export * from './fs'
 export * from './ipld'
 export * from './ipld-multi'
-export * from './logger'
 export * from './obfuscate'
 export * from './streams'
+// Explicitly export logger to override common-web's version
+export { subsystemLogger } from './logger'

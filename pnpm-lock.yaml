@@ -1966,6 +1966,9 @@ importers:
       '@atproto/crypto':
         specifier: workspace:^
         version: link:../crypto
+      '@atproto/lex-cbor':
+        specifier: workspace:^
+        version: link:../lex/lex-cbor
       '@atproto/lexicon':
         specifier: workspace:^
         version: link:../lexicon

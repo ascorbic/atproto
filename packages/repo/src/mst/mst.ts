@@ -1,13 +1,8 @@
 import { CID } from 'multiformats'
 import { z } from 'zod'
 import { schema as common } from '@atproto/common-web'
-import { cidForLex, encode, cidForCbor } from '@atproto/lex-cbor'
+import { cidForLex } from '@atproto/lex-cbor'
 
-async function dataToCborBlock<T>(value: T): Promise<{ cid: CID; bytes: Uint8Array }> {
-  const bytes = encode(value) as Uint8Array
-  const cid = (await cidForCbor(bytes)) as unknown as CID
-  return { cid, bytes }
-}
 import { BlockMap } from '../block-map'
 import { CidSet } from '../cid-set'
 import { MissingBlockError, MissingBlocksError } from '../error'
@@ -15,6 +10,7 @@ import * as parse from '../parse'
 import { ReadableBlockstore } from '../storage'
 import { CarBlock } from '../types'
 import * as util from './util'
+import { dataToCborBlock } from '../util'
 
 /**
  * This is an implementation of a Merkle Search Tree (MST)

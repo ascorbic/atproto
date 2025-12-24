@@ -1,9 +1,7 @@
-/* eslint-disable import/no-deprecated */
-
 import { CID } from 'multiformats/cid'
 import * as ui8 from 'uint8arrays'
-import { dataToCborBlock, streamToBytes, wait } from '@atproto/common'
-import { CarBlock, readCarStream, writeCarStream } from '../src'
+import { wait, streamToBuffer } from '@atproto/common-web'
+import { CarBlock, dataToCborBlock, readCarStream, writeCarStream } from '../src'
 import fixtures from './car-file-fixtures.json'
 
 describe('car', () => {
@@ -18,7 +16,7 @@ describe('car', () => {
         }
       }
       const carStream = writeCarStream(root, blockIter())
-      const car = await streamToBytes(carStream)
+      const car = await streamToBuffer(carStream)
       const carB64 = ui8.toString(car, 'base64')
       expect(carB64).toEqual(fixture.car)
     })

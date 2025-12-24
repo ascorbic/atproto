@@ -1,10 +1,16 @@
 import * as cbor from '@ipld/dag-cbor'
 import { CID } from 'multiformats/cid'
 import { TID, check, schema } from '@atproto/common-web'
-import { decode as cborDecode, cidForLex } from '@atproto/lex-cbor'
+import {
+  decode as cborDecode,
+  encode as cborEncode,
+  cidForCbor,
+  cidForLex,
+  LexValue as CborLexValue,
+} from '@atproto/lex-cbor'
 import * as crypto from '@atproto/crypto'
 import { Keypair } from '@atproto/crypto'
-import { LexValue, RepoRecord, ipldToLex, lexToIpld } from '@atproto/lexicon'
+import { LexValue, RepoRecord } from '@atproto/lexicon'
 import { DataDiff } from './data-diff'
 import {
   Commit,
@@ -101,9 +107,20 @@ export const verifyCommitSig = async (
   const encoded = cbor.encode(rest)
   return crypto.verifySignature(didKey, encoded, sig)
 }
+/**
+ * A web-compatible version of the function from `@atproto/common`.
+ * @deprecated Use {@link encode} and {@link cidForCbor} from `@atproto/lex-cbor` instead.
+ */
+export async function dataToCborBlock<T>(
+  value: T,
+): Promise<{ cid: CID; bytes: Uint8Array }> {
+  const bytes = cborEncode(value as CborLexValue)
+  const cid = (await cidForCbor(bytes)) as unknown as CID
+  return { cid, bytes }
+}
 
 export const cborToLex = (val: Uint8Array): LexValue => {
-  return ipldToLex(cborDecode(val))
+  return cborDecode(val)
 }
 
 export const cborToLexRecord = (val: Uint8Array): RepoRecord => {
@@ -115,7 +132,7 @@ export const cborToLexRecord = (val: Uint8Array): RepoRecord => {
 }
 
 export const cidForRecord = async (val: LexValue): Promise<CID> => {
-  return (await cidForLex(lexToIpld(val))) as unknown as CID
+  return (await cidForLex(val as CborLexValue)) as unknown as CID
 }
 
 export const ensureV3Commit = (commit: LegacyV2Commit | Commit): Commit => {

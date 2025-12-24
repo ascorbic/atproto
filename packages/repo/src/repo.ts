@@ -1,14 +1,8 @@
 import { CID } from 'multiformats/cid'
 import { TID } from '@atproto/common-web'
-import { encode, cidForCbor } from '@atproto/lex-cbor'
 import * as crypto from '@atproto/crypto'
 import { lexToIpld } from '@atproto/lexicon'
 
-async function dataToCborBlock<T>(value: T): Promise<{ cid: CID; bytes: Uint8Array }> {
-  const bytes = encode(value) as Uint8Array
-  const cid = (await cidForCbor(bytes)) as unknown as CID
-  return { cid, bytes }
-}
 import { BlockMap } from './block-map'
 import { CidSet } from './cid-set'
 import { DataDiff } from './data-diff'
@@ -176,7 +170,7 @@ export class Repo extends ReadableRepo {
       },
       keypair,
     )
-    const commitBlock = await dataToCborBlock(lexToIpld(commit))
+    const commitBlock = await util.dataToCborBlock(lexToIpld(commit))
     if (!commitBlock.cid.equals(this.cid)) {
       newBlocks.set(commitBlock.cid, commitBlock.bytes)
       relevantBlocks.set(commitBlock.cid, commitBlock.bytes)
