@@ -1,18 +1,40 @@
-// Logger with optional pino support for backwards compatibility.
-// If @atproto/common is available (Node.js), uses pino logger.
-// Otherwise uses console logger from @atproto/common-web.
+import type { subsystemLogger as SubsystemLoggerFn } from '@atproto/common'
 
-import { subsystemLogger as webLogger, Logger } from '@atproto/common-web'
+/**
+ * Console-based logger for environments where @atproto/common is not available.
+ * API is compatible with pino's subsystemLogger from @atproto/common.
+ */
+
+type Logger = Pick<
+  ReturnType<typeof SubsystemLoggerFn>,
+  'debug' | 'info' | 'warn' | 'error'
+>
+
+const createConsoleLogFn =
+  (name: string, level: 'debug' | 'info' | 'warn' | 'error') => (obj, msg) => {
+    if (msg) {
+      console[level](`[${name}] ${msg}`, obj)
+    } else {
+      console[level](`[${name}]`, obj)
+    }
+  }
+
+export const consoleLogger = (name: string): Logger => ({
+  debug: createConsoleLogFn(name, 'debug'),
+  info: createConsoleLogFn(name, 'info'),
+  warn: createConsoleLogFn(name, 'warn'),
+  error: createConsoleLogFn(name, 'error'),
+})
 
 function createLogger(): Logger {
   try {
-    // Try to use pino logger from @atproto/common if available
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { subsystemLogger } = require('@atproto/common')
+    // Try to use logger from @atproto/common if available
+    const { subsystemLogger } =
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      require('@atproto/common') as typeof import('@atproto/common')
     return subsystemLogger('repo')
   } catch {
-    // Fall back to console logger from common-web
-    return webLogger('repo')
+    return consoleLogger('repo')
   }
 }
 
